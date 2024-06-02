@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/stylesheet.css">
+    <!--script type="text/javascript" src="js/app.js"></script>-->
+    <title>Kartičky</title>
+    <link rel="icon" href="graphic/joker-card.png" type="image/png">
+</head>
+
+<body id="body">
+    <!--<header><h2>Menu</h2></header>-->
+    <div class="wrapper">
+        <label id="menu-control" for="menu-control-input">Menu</label><input type="checkbox" id="menu-control-input" />
+        <nav id="menu">
+            <ul>
+                <li id="button-view"><a href="" data-state="data state attribute">Zobrazit</a></li>
+                <li id="button-add"><a href="">Přidat kartičku</a></li>
+                <li id="button-save"><a href="">Uložit do souboru</a></li>
+                <li id="button-load"><a href="">Nahrát ze souboru</a></li>
+                <li id="button-help"><a href="">Nápověda</a></li>
+            </ul>
+        </nav>
+        <main id="main">
+            <h1>Chyba, nenačetli se učící kartičky. Pravděpodobně se nenačítá JavaScript</h1>
+        </main>
+        <footer id="footer">
+            <p class="footer-item">Autor: Miroslav Matějček</p>
+            <p class="footer-item"><a href="mailto:matejm42&lt;at&gt;fel.cvut.cz">matejm42 &lt;at&gt; fel.cvut.cz</a>
+            </p>
+            <p class="footer-item">Aplikace vytvořena jako semestrální projekt předmětu <a
+                    href="https://intranet.fel.cvut.cz/cz/education/bk/predmety/25/99/p2599006.html">KAJ</a></p>
+        </footer>
+    </div>
+
+
+    <script>
+
+        function getRandomInt(min, max) {
+            // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+            const minCeiled = Math.ceil(min);
+            const maxFloored = Math.floor(max);
+            return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+        }
+
+        function change_card_to(new_card_id) {
+
+            let cardEl = document.querySelector(`#card_${current_deck.current_card_id}`);
+            current_deck.current_card_id = new_card_id
+            cardEl.setAttribute("id", `card_${current_deck.current_card_id}`)
+            if (current_deck.getCurrentCard().isClicked) {
+                cardEl.className = "card flipped";
+            } else {
+                cardEl.className = "card"
+            }
+
+
+            cardEl.innerHTML = ""
+            cardEl = document.querySelector(`#card_${current_deck.current_card_id}`);
+            content_div = document.createElement('div');
+            content_div.className = 'card-content'
+            html = current_deck.getCurrentCard().getContent()
+            if (typeof html === 'string' || html instanceof String) {
+                cardEl.innerHTML = html
+            } else {
+                content_div.append(html)
+                cardEl.append(content_div);
+            }
+        }
+
+
+        function change_deck(deck) {
+            current_deck = deck;
+            main.innerHTML = "<h1>" + deck.name + "</h1>"
+            main.innerHTML += `<div id='card_${deck.current_card_id}'> </div>`;
+            let cardEl = document.querySelector(`#card_${deck.current_card_id}`);
+            cardEl.addEventListener("click", () => deck.flip_card(deck.current_card_id))
+            change_card_to(deck.current_card_id)
+        }
+
+        function add_card_to_current_deck(card) {
+            if (current_deck.getCurrentCard() instanceof StartingCard) {
+                const deck_name = prompt("Zadejte jméno nového balíčku:", `Balíček_${getRandomInt(1000, 9999)}`)// Random so it doesn't overwrite already existing decks
+                change_deck(new CardDeck([card], deck_name));
+            } else {
+                current_deck.add_card(card);
+                change_card_to(current_deck.number_of_cards - 1)
+            }
+        }
+
+
+        function restart() {
+            change_deck(starting_deck);
+        }
+
+        class CardDeck {
+            cards
+            current_card_id
+            number_of_cards
+            name
+
+            constructor(cards, name, current_card = 0) {
+                this.number_of_cards = cards.length;
+                if (current_card > this.number_of_cards) { //To not overflow
+                    current_card = 0;
+                }
+
+                this.cards = cards;
+                this.current_card_id = current_card;
+                this.name = name;
+            }
+
+            getCurrentCard() {
+                return this.cards[this.current_card_id]
+            }
+
+            add_card(card) {
+                this.cards.push(card)
+                this.number_of_cards += 1;
+            }
+
+            flip_card(card_id) {
+                console.log(card_id)
+                this.cards[card_id].isClicked = !this.cards[card_id].isClicked;
+                change_card_to(card_id);
+            }
+
+            toJSON() {
+                return {
+                    name: this.name,
+                    current_card_id: this.current_card_id,
+                    number_of_cards: this.number_of_cards,
+                    cards: this.cards
+                }
+            }
+
+            download(e, type_of = "application/json") {
+                e.preventDefault(); //tried to not reload, but it does not seem possible
+                e.stopPropagation();
+                let body = document.body;
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([JSON.stringify(this, null, 2)]));
+                a.setAttribute("download", this.name + ".json");
+                body.appendChild(a);
+                a.click();
+                body.removeChild(a);
+            }
+        }
+
+        class Card {
+            #content;
+            isClicked;
+
+            constructor(content) {
+                this.#content = content;
+                this.isClicked = false;
+            }
+
+            getContent() {
+                return this.#content;
+            }
+
+            toJSON() {
+                return {
+                    question: this.question,
+                    answer: this.answer
+                }
+            }
+
+        }
+
+        class StartingCard extends Card {
+            constructor() {
+                const content = `
+            <div class="card-content">
+                <h1>Vyberte si téma</h1>
+                <button id="load-cards-button" class="start-button">
+                    Nahrát naposledy použité kartičky
+                </button>
+
+                <button id="load-cards-button" class="start-button">
+                    Nahrát kartičky ze souboru
+                </button>
+            </div>
+        `;
+                super(content);
+            }
+        }
+
+        class QuestionCard extends Card {
+            question;
+            answer;
+
+            constructor(question, answer) {
+                const content = '';
+                super(content);
+                this.question = question;
+                this.answer = answer;
+                this.isClicked = false;
+
+
+            }
+
+            getContent() {
+                if (!this.isClicked) {
+                    let h1 = document.createElement('H1');
+                    h1.setAttribute("class", "question");
+                    h1.textContent = this.question;
+                    return h1
+                } else {
+                    let pre = document.createElement('h2');
+                    pre.setAttribute("class", "answer");
+                    pre.textContent = this.answer;
+                    return pre
+                }
+            }
+
+
+        }
+
+
+        function create_card_event(e) {
+            e.preventDefault()
+            const question = prompt("Zadejte otázku:");
+            const answer = prompt("Zadejte odpověď:");
+            const new_card = new QuestionCard(question, answer);
+            add_card_to_current_deck(new_card);
+        }
+
+        function dropJSON(targetEl, callback) {
+            // disable default drag & drop functionality
+            targetEl.addEventListener('dragenter', function (e) { e.preventDefault(); });
+            targetEl.addEventListener('dragover', function (e) { e.preventDefault(); });
+
+            targetEl.addEventListener('drop', function (event) {
+
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var data = JSON.parse(this.result);
+                    callback(data);
+                };
+
+                reader.readAsText(event.dataTransfer.files[0]);
+                event.preventDefault();
+            });
+        }
+
+        function loadJSON(data){
+            cards = []
+        
+            for (const card of data["cards"]){
+                cards.push(new QuestionCard(card["question"], card["answer"]))
+            }
+            deck = new CardDeck(cards, data["name"], data["current_card_id"])
+            first_answer = data["cards"][0]["answer"]
+            change_deck(deck)
+            
+        }
+
+        dropJSON(
+            document.getElementById("body"),
+            loadJSON
+        );
+
+        function load_file(e){
+            
+            alert("Přetáhněte soubor kamkoliv do těla aplikace a kartičky se načtou.")
+            e.preventDefault()
+        }
+
+
+
+
+
+
+
+
+        let button_add = document.querySelector("#button-add");
+        button_add.addEventListener("click", e => create_card_event(e));
+
+        let button_save = document.querySelector("#button-save");
+        button_save.addEventListener("click", e => current_deck.download(e));
+
+        let button_load = document.querySelector("#button-load");
+        button_load.addEventListener("click", e => load_file(e));
+
+
+        let main = document.querySelector("#main");
+        let starting_card = new StartingCard();
+        let current_deck = new CardDeck([starting_card], "Můžeme začít");
+
+        let starting_deck = new CardDeck([starting_card], "Můžeme začít");
+        restart();
+
+
+
+
+    </script>
+
+</body>
+
+</html>
