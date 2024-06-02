@@ -63,6 +63,8 @@
             html = current_deck.getCurrentCard().getContent()
             if (typeof html === 'string' || html instanceof String) {
                 cardEl.innerHTML = html
+                let button_demo = document.querySelector("#load-cards-demo");
+                button_demo.addEventListener("click", e => load_demo(e));
             } else {
                 content_div.append(html)
                 cardEl.append(content_div);
@@ -121,9 +123,16 @@
             }
 
             flip_card(card_id) {
-                console.log(card_id)
-                this.cards[card_id].isClicked = !this.cards[card_id].isClicked;
-                change_card_to(card_id);
+                let next_card = 0;
+                if (this.cards[card_id].isClicked) { // We already saw the answer, lets change question
+                    this.cards[card_id].isClicked = false;
+                    next_card = getRandomInt(0, this.number_of_cards);
+                } else { // Show the answer
+                    this.cards[card_id].isClicked = true;
+                    next_card = card_id;
+                }
+
+                change_card_to(next_card);
             }
 
             toJSON() {
@@ -244,8 +253,11 @@
                     var data = JSON.parse(this.result);
                     callback(data);
                 };
-
-                reader.readAsText(event.dataTransfer.files[0]);
+                try {
+                    reader.readAsText(event.dataTransfer.files[0]);
+                } catch (error) {
+                    console.error(error);
+                }
                 event.preventDefault();
             });
         }
@@ -308,8 +320,7 @@
         let starting_deck = new CardDeck([starting_card], "Můžeme začít");
         restart();
 
-        let button_demo = document.querySelector("#load-cards-demo");
-        button_demo.addEventListener("click", e => load_demo(e));
+
 
 
 
