@@ -182,6 +182,10 @@
                 <button id="load-cards-button" class="start-button">
                     Nahrát kartičky ze souboru
                 </button>
+
+                <button id="load-cards-demo" class="start-button">
+                    Nahrát veřejné demo kartičky
+                </button>
             </div>
         `;
                 super(content);
@@ -246,16 +250,16 @@
             });
         }
 
-        function loadJSON(data){
+        function loadJSON(data) {
             cards = []
-        
-            for (const card of data["cards"]){
+
+            for (const card of data["cards"]) {
                 cards.push(new QuestionCard(card["question"], card["answer"]))
             }
             deck = new CardDeck(cards, data["name"], data["current_card_id"])
             first_answer = data["cards"][0]["answer"]
             change_deck(deck)
-            
+
         }
 
         dropJSON(
@@ -263,10 +267,20 @@
             loadJSON
         );
 
-        function load_file(e){
-            
+        function load_file(e) {
+
             alert("Přetáhněte soubor kamkoliv do těla aplikace a kartičky se načtou.")
             e.preventDefault()
+        }
+
+        function load_demo(e) {
+            let url = 'https://matejm42.github.io/karticky/demo.json';
+            alert("huhuu")
+            fetch(url)
+                .then(res => res.json())
+                .then(out => loadJSON(out))
+                .catch(err => { throw err });
+
         }
 
 
@@ -286,12 +300,17 @@
         button_load.addEventListener("click", e => load_file(e));
 
 
+
+
         let main = document.querySelector("#main");
         let starting_card = new StartingCard();
         let current_deck = new CardDeck([starting_card], "Můžeme začít");
 
         let starting_deck = new CardDeck([starting_card], "Můžeme začít");
         restart();
+
+        let button_demo = document.querySelector("#load-cards-demo");
+        button_demo.addEventListener("click", e => load_demo(e));
 
 
 
