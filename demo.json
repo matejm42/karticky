@@ -1,0 +1,27 @@
+{
+  "name": "demo",
+  "current_card_id": 0,
+  "number_of_cards": 5,
+  "cards": [
+    {
+      "question": "Nejprve si zopakujeme odpověď na nejdůležitější otázku vesmíru. Je to?",
+      "answer": "42! S mým username to bohužel nijak nesouvisí, ale jsem za něj rád."
+    },
+    {
+      "question": "Je možno za pomoci atributu download stáhnout soubor anižby to reloadnulo stránku?",
+      "answer": "Ani nikdo na StackOverflow nenašel funkční řešení, přestože pár se jich tak tváří."
+    },
+    {
+      "question": "Je možno v javascriptu nějak rozumně uložit pole objektů vlastní třídy?",
+      "answer": "Chce to pevné nervy"
+    },
+    {
+      "question": "Kolik má noha židlí?",
+      "answer": "Hmmmmmmmmmmmmm"
+    },
+    {
+      "question": "Pokud false == \"0\" a \"\" == false, platí \"\" == \"0\"?",
+      "answer": "Ne, užijte si hledání min https://eqeq.js.org/"
+    }
+  ]
+}
