@@ -275,7 +275,6 @@
 
         function load_demo(e) {
             let url = 'https://matejm42.github.io/karticky/demo.json';
-            alert("huhuu")
             fetch(url)
                 .then(res => res.json())
                 .then(out => loadJSON(out))
