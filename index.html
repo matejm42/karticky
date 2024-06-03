@@ -46,7 +46,6 @@
         }
 
         let should_show_all = false;
-        let card_elements = []; //so the event handlers does not get garbage collected
 
         function change_card_to(new_card_id) {
 
@@ -83,7 +82,6 @@
 
 
         function show_all() {
-            card_elements = []
             main.innerHTML = "<h1>" + current_deck.name + "</h1>"
 
             for (let i = 0; i < current_deck.cards.length; i++) {
@@ -94,14 +92,15 @@
                 } else {
                     cardEl.className = "card"
                 }
-                cardEl.addEventListener("click", () => current_deck.flip_card(i))
+                /*cardEl.addEventListener("click",
+                    current_deck.flip_card.bind(current_deck,i)
+                );*/
                 cardEl.innerHTML = ""
                 content_div = document.createElement('div');
                 content_div.className = 'card-content'
                 html = current_deck.cards[i].getContent()
                 content_div.append(html)
                 cardEl.append(content_div);
-                card_elements.push(cardEl);
             }
         }
 
@@ -113,7 +112,7 @@
             main.innerHTML = "<h1>" + deck.name + "</h1>"
             main.innerHTML += `<div id='card_${deck.current_card_id}'> </div>`;
             let cardEl = document.querySelector(`#card_${deck.current_card_id}`);
-            cardEl.addEventListener("click", () => deck.flip_card(deck.current_card_id))
+            /*cardEl.addEventListener("click", deck.flip_card.bind(deck, deck.current_card_id))*/
             change_card_to(deck.current_card_id)
         }
 
@@ -334,7 +333,6 @@
 
         function load_all(e) {
             e.preventDefault()
-            card_elements = []
             if (should_show_all) {
                 should_show_all = false;
                 change_card_to(getRandomInt(0, current_deck.number_of_cards));
@@ -366,6 +364,20 @@
 
         let starting_deck = new CardDeck([starting_card], "Můžeme začít");
         restart();
+
+        // I can't add listener to every card in all card view in a for loop so I have to do it like this
+        document.addEventListener('click', function (event) { 
+
+            if (event.target.closest('.card ') && !event.target.matches('.start-button')) {
+                for (let i = 0; i < current_deck.number_of_cards; i++){
+                    if (event.target.closest(`#card_${i}`)) {
+                        current_deck.flip_card(i);
+                    }
+                }
+
+            }
+
+        }, true);
 
 
 
