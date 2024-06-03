@@ -15,7 +15,8 @@
         <label id="menu-control" for="menu-control-input">Menu</label><input type="checkbox" id="menu-control-input" />
         <nav id="menu">
             <ul>
-                <li id="button-view"><a href="" data-state="data state attribute">Zobrazit</a></li>
+                <li id="button-reload"><a href="">Obnovit stránku</a></li>
+                <li id="button-view"><a href="">Zobrazit celý balíček</a></li>
                 <li id="button-add"><a href="">Přidat kartičku</a></li>
                 <li id="button-save"><a href="">Uložit do souboru</a></li>
                 <li id="button-load"><a href="">Nahrát ze souboru</a></li>
@@ -44,6 +45,9 @@
             return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
         }
 
+        let should_show_all = false;
+        let card_elements = []; //so the event handlers does not get garbage collected
+
         function change_card_to(new_card_id) {
 
             let cardEl = document.querySelector(`#card_${current_deck.current_card_id}`);
@@ -65,11 +69,43 @@
                 cardEl.innerHTML = html
                 let button_demo = document.querySelector("#load-cards-demo");
                 button_demo.addEventListener("click", e => load_demo(e));
+                let button_file = document.querySelector("#load-cards-button-alert");
+                button_file.addEventListener("click", e => load_file(e));
             } else {
                 content_div.append(html)
                 cardEl.append(content_div);
             }
+            if (should_show_all) {
+                show_all();
+            }
+
         }
+
+
+        function show_all() {
+            card_elements = []
+            main.innerHTML = "<h1>" + current_deck.name + "</h1>"
+
+            for (let i = 0; i < current_deck.cards.length; i++) {
+                main.innerHTML += `<div id='card_${i}'> </div>`;
+                let cardEl = document.querySelector(`#card_${i}`);
+                if (current_deck.cards[i].isClicked) {
+                    cardEl.className = "card flipped";
+                } else {
+                    cardEl.className = "card"
+                }
+                cardEl.addEventListener("click", () => current_deck.flip_card(i))
+                cardEl.innerHTML = ""
+                content_div = document.createElement('div');
+                content_div.className = 'card-content'
+                html = current_deck.cards[i].getContent()
+                content_div.append(html)
+                cardEl.append(content_div);
+                card_elements.push(cardEl);
+            }
+        }
+
+
 
 
         function change_deck(deck) {
@@ -188,7 +224,7 @@
                     Nahrát naposledy použité kartičky
                 </button>
 
-                <button id="load-cards-button" class="start-button">
+                <button id="load-cards-button-alert" class="start-button">
                     Nahrát kartičky ze souboru
                 </button>
 
@@ -283,9 +319,11 @@
 
             alert("Přetáhněte soubor kamkoliv do těla aplikace a kartičky se načtou.")
             e.preventDefault()
+            e.stopImmediatePropagation()
         }
 
         function load_demo(e) {
+            e.stopImmediatePropagation()
             let url = 'https://matejm42.github.io/karticky/demo.json';
             fetch(url)
                 .then(res => res.json())
@@ -294,11 +332,17 @@
 
         }
 
-
-
-
-
-
+        function load_all(e) {
+            e.preventDefault()
+            card_elements = []
+            if (should_show_all) {
+                should_show_all = false;
+                change_card_to(getRandomInt(0, current_deck.number_of_cards));
+            } else {
+                should_show_all = true;
+                show_all()
+            }
+        }
 
 
         let button_add = document.querySelector("#button-add");
@@ -309,6 +353,9 @@
 
         let button_load = document.querySelector("#button-load");
         button_load.addEventListener("click", e => load_file(e));
+
+        let button_view = document.querySelector("#button-view");
+        button_view.addEventListener("click", e => load_all(e));
 
 
 

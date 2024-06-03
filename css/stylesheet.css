@@ -37,7 +37,7 @@
     color: red;
 }*/
 
-@media all and (max-width: 750px) {
+@media all and (max-width: 900px) {
     #menu-control {
         display: inline-block;
     }
