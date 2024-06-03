@@ -74,7 +74,7 @@
                 content_div.append(html)
                 cardEl.append(content_div);
             }
-            if (should_show_all) {
+            if (should_show_all && !(current_deck.getCurrentCard() instanceof StartingCard))  {
                 show_all();
             }
 
@@ -333,12 +333,21 @@
 
         function load_all(e) {
             e.preventDefault()
+
             if (should_show_all) {
+                buttonEl = document.querySelector("#button-view")
+                buttonEl.innerHTML = "<a href> Zobrazit celý balíček</a>"
                 should_show_all = false;
-                change_card_to(getRandomInt(0, current_deck.number_of_cards));
+                buttonEl = document.querySelector("#button-view")
+                buttonEl.innerHTML = "<a href> Zobrazit celý balíček</a>"
+                change_deck(current_deck);
             } else {
                 should_show_all = true;
-                show_all()
+                buttonEl = document.querySelector("#button-view")
+                buttonEl.innerHTML = "<a href> Zobrazit po kartičkách </a>"
+                if (!(current_deck.getCurrentCard() instanceof StartingCard)) {
+                    show_all()
+                }
             }
         }
 
@@ -366,10 +375,10 @@
         restart();
 
         // I can't add listener to every card in all card view in a for loop so I have to do it like this
-        document.addEventListener('click', function (event) { 
+        document.addEventListener('click', function (event) {
 
             if (event.target.closest('.card ') && !event.target.matches('.start-button')) {
-                for (let i = 0; i < current_deck.number_of_cards; i++){
+                for (let i = 0; i < current_deck.number_of_cards; i++) {
                     if (event.target.closest(`#card_${i}`)) {
                         current_deck.flip_card(i);
                     }
