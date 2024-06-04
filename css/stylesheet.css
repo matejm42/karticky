@@ -90,6 +90,10 @@
     border-radius: 50%;
     background: red;
     left: 0;
+    -webkit-transition: all 0.2s ease;
+    -moz-transition: all 0.2s ease;
+    -ms-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
     transition: all 0.2s ease;
 }
 
@@ -164,11 +168,11 @@ footer {
     padding: 10px;
     margin: 10px;
 
-    transition:  1s;
-
-
-
-
+    -webkit-transition: 1s;
+    -moz-transition: 1s;
+    -ms-transition: 1s;
+    -o-transition: 1s;
+    transition: 1s;
 }
 
 .flipped {
