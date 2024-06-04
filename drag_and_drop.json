@@ -1,0 +1,19 @@
+{
+  "name": "Další pčíklad balíčku s otázkami",
+  "current_card_id": 2,
+  "number_of_cards": 3,
+  "cards": [
+    {
+      "question": "Kolik je 84 + 0?",
+      "answer": "84"
+    },
+    {
+      "question": "Kolik má rok dní?",
+      "answer": "365,242"
+    },
+    {
+      "question": "Jak zní první sloka Máchova Máje?",
+      "answer": "Byl pozdní večer – první máj –\nvečerní máj – byl lásky čas.\nHrdliččin zval ku lásce hlas,\nkde borový zaváněl háj.\nO lásce šeptal tichý mech;\nkvětoucí strom lhal lásky žel,\nsvou lásku slavík růži pěl,\nrůžinu jevil vonný vzdech.\nJezero hladké v křovích stinných\nzvučelo temně tajný bol,\nbřeh je objímal kol a kol;\na slunce jasná světů jiných\nbloudila blankytnými pásky,\nplanoucí tam co slzy lásky."
+    }
+  ]
+}
