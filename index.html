@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="css/stylesheet.css">
     <!--script type="text/javascript" src="js/app.js"></script>-->
     <title>Kartičky</title>
-    <link rel="icon" href="graphic/joker-card.png" type="image/png">
+    <link rel="icon" href="data/joker-card.png" type="image/png">
 </head>
 
 <body id="body">
@@ -20,9 +20,13 @@
                 <li id="button-add"><a href="">Přidat kartičku</a></li>
                 <li id="button-save"><a href="">Uložit do souboru</a></li>
                 <li id="button-load"><a href="">Nahrát ze souboru</a></li>
-                <li id="button-help"><a href="">Nápověda</a></li>
+                <li id="button-music" state="on"><a href="">Vypnout hudbu</a></li>
+                <li id="button-help" state="off"><a href="">Nápověda</a></li>
             </ul>
         </nav>
+        <audio autoplay="autoplay" loop="true" class="music">
+            <source src="data/study_music.mp3" />     
+        </audio>
         <main id="main">
             <h1>Chyba, nenačetli se učící kartičky. Pravděpodobně se nenačítá JavaScript</h1>
         </main>
@@ -289,6 +293,22 @@
             restart();
         }
 
+        function music_event(e) {
+            e.preventDefault()
+            buttonEl = document.querySelector("#button-music");
+            musicEl = document.querySelector(".music")
+            if (buttonEl.getAttribute("state") == "on"){
+                buttonEl.setAttribute("state", "off")
+                musicEl.pause()
+                buttonEl.innerHTML = "<a href> Zapnout hudbu</a>"
+            } else {
+                buttonEl.setAttribute("state", "on")
+                musicEl.play()
+                buttonEl.innerHTML = "<a href> Vypnout hudbu</a>"
+            }
+            
+        }
+
         function dropJSON(targetEl, callback) {
             // disable default drag & drop functionality
             targetEl.addEventListener('dragenter', function (e) { e.preventDefault(); });
@@ -395,6 +415,9 @@
 
         let button_view = document.querySelector("#button-view");
         button_view.addEventListener("click", e => load_all(e));
+
+        let button_music = document.querySelector("#button-music");
+        button_music.addEventListener("click", e => music_event(e));
 
 
 
