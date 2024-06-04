@@ -74,10 +74,10 @@
                 content_div.append(html)
                 cardEl.append(content_div);
             }
-            if (should_show_all && !(current_deck.getCurrentCard() instanceof StartingCard))  {
+            if (should_show_all && !(current_deck.getCurrentCard() instanceof StartingCard)) {
                 show_all();
             }
-
+            
         }
 
 
@@ -107,13 +107,16 @@
 
 
 
-        function change_deck(deck) {
+        function change_deck(deck, change_history=true) {
             current_deck = deck;
             main.innerHTML = "<h1>" + deck.name + "</h1>"
             main.innerHTML += `<div id='card_${deck.current_card_id}'> </div>`;
             let cardEl = document.querySelector(`#card_${deck.current_card_id}`);
             /*cardEl.addEventListener("click", deck.flip_card.bind(deck, deck.current_card_id))*/
             change_card_to(deck.current_card_id)
+            if (change_history){
+                window.history.pushState(JSON.stringify(current_deck, null, null), "", "?"+JSON.stringify(current_deck, null, null))
+            }
         }
 
         function add_card_to_current_deck(card) {
@@ -125,7 +128,6 @@
                 change_card_to(current_deck.number_of_cards - 1)
             }
         }
-
 
         function restart() {
             change_deck(starting_deck);
@@ -297,16 +299,19 @@
             });
         }
 
-        function loadJSON(data) {
-            cards = []
+        function loadJSON(data, change_history=true) {
+            if (data["name"] == "Můžeme začít") {
+                change_deck(starting_deck, change_history)
+            } else {
+                cards = []
 
-            for (const card of data["cards"]) {
-                cards.push(new QuestionCard(card["question"], card["answer"]))
+                for (const card of data["cards"]) {
+                    cards.push(new QuestionCard(card["question"], card["answer"]))
+                }
+                deck = new CardDeck(cards, data["name"], data["current_card_id"])
+                first_answer = data["cards"][0]["answer"]
+                change_deck(deck, change_history)
             }
-            deck = new CardDeck(cards, data["name"], data["current_card_id"])
-            first_answer = data["cards"][0]["answer"]
-            change_deck(deck)
-
         }
 
         dropJSON(
@@ -376,6 +381,7 @@
 
         // I can't add listener to every card in all card view in a for loop so I have to do it like this
         document.addEventListener('click', function (event) {
+            
 
             if (event.target.closest('.card ') && !event.target.matches('.start-button')) {
                 for (let i = 0; i < current_deck.number_of_cards; i++) {
@@ -387,6 +393,10 @@
             }
 
         }, true);
+
+        window.addEventListener('popstate', e => {
+            loadJSON(JSON.parse(e.state), change_history=false)
+        });
 
 
 
