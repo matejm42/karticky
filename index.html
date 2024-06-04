@@ -15,7 +15,7 @@
         <label id="menu-control" for="menu-control-input">Menu</label><input type="checkbox" id="menu-control-input" />
         <nav id="menu">
             <ul>
-                <li id="button-reload"><a href="">Obnovit stránku</a></li>
+                <li id="button-reload"><a href="">Můžeme začít</a></li>
                 <li id="button-view"><a href="">Zobrazit celý balíček</a></li>
                 <li id="button-add"><a href="">Přidat kartičku</a></li>
                 <li id="button-save"><a href="">Uložit do souboru</a></li>
@@ -70,6 +70,8 @@
                 button_demo.addEventListener("click", e => load_demo(e));
                 let button_file = document.querySelector("#load-cards-button-alert");
                 button_file.addEventListener("click", e => load_file(e));
+                let button_last = document.querySelector("#load-cards-button");
+                button_last.addEventListener("click", e => load_storage(e));
             } else {
                 content_div.append(html)
                 cardEl.append(content_div);
@@ -115,8 +117,12 @@
             /*cardEl.addEventListener("click", deck.flip_card.bind(deck, deck.current_card_id))*/
             change_card_to(deck.current_card_id)
             if (change_history){
-                window.history.pushState(JSON.stringify(current_deck, null, null), "", "?"+JSON.stringify(current_deck, null, null))
+                window.history.pushState(JSON.stringify(current_deck, null, null), "", "?"+deck.name)
             }
+            if (deck.name != "Můžeme začít"){
+                window.localStorage.setItem("deck", JSON.stringify(deck, null, null));
+            }
+
         }
 
         function add_card_to_current_deck(card) {
@@ -278,6 +284,11 @@
             add_card_to_current_deck(new_card);
         }
 
+        function reload_event(e) {
+            e.preventDefault();
+            restart();
+        }
+
         function dropJSON(targetEl, callback) {
             // disable default drag & drop functionality
             targetEl.addEventListener('dragenter', function (e) { e.preventDefault(); });
@@ -336,6 +347,19 @@
 
         }
 
+        function load_storage(e) {
+            e.stopImmediatePropagation();
+            try {
+                deck = window.localStorage.getItem("deck");
+                loadJSON(JSON.parse(deck));
+            } catch (e) {
+                console.log(e)
+                alert("Ve Vašem prohlížeči nemáte uložený žádný balíček. Nahrajte kartičky ze souboru, nebo použijte veřejné demo!");
+            }
+            
+
+        }
+
         function load_all(e) {
             e.preventDefault()
 
@@ -359,6 +383,9 @@
 
         let button_add = document.querySelector("#button-add");
         button_add.addEventListener("click", e => create_card_event(e));
+
+        let button_reload = document.querySelector("#button-reload");
+        button_reload.addEventListener("click", e => reload_event(e));
 
         let button_save = document.querySelector("#button-save");
         button_save.addEventListener("click", e => current_deck.download(e));
