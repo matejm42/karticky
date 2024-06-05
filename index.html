@@ -20,11 +20,11 @@
                 <li id="button-add"><a href="">Přidat kartičku</a></li>
                 <li id="button-save"><a href="">Uložit do souboru</a></li>
                 <li id="button-load"><a href="">Nahrát ze souboru</a></li>
-                <li id="button-music" state="on"><a href="">Vypnout hudbu</a></li>
+                <li id="button-music" state="off"><a href="">Zapnout hudbu</a></li>
                 <li id="button-help" state="off"><a href="">Nápověda</a></li>
             </ul>
         </nav>
-        <audio autoplay="autoplay" loop="true" class="music">
+        <audio loop="true" class="music">
             <source src="data/study_music.mp3" />     
         </audio>
         <main id="main">
@@ -416,6 +416,8 @@
         let button_view = document.querySelector("#button-view");
         button_view.addEventListener("click", e => load_all(e));
 
+        musicEl = document.querySelector(".music");
+        
         let button_music = document.querySelector("#button-music");
         button_music.addEventListener("click", e => music_event(e));
 
