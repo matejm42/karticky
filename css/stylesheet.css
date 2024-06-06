@@ -1,4 +1,18 @@
+/* Common for whole page */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: grey;
+    display: flex;
+    flex-direction: column;
+}
+
+
 /* Menu */
+menu {
+    position: fixed;
+}
 
 #menu-control {
     color: white;
@@ -7,36 +21,39 @@
     background-color: #111111;
     display: none;
 }
+
 #menu-control-input {
     display: none;
 }
-#menu-control-input:checked + #menu {
+
+#menu-control-input:checked+#menu {
     display: block;
 }
 
 #menu ul {
-    padding: 0  ;
+    padding: 0;
     margin: 0;
 }
+
 #menu li {
     display: inline-block;
     list-style-type: none;
     background-color: #111;
 }
+
 #menu li:nth-child(2n) {
     background-color: #666;
 }
+
 #menu a {
     display: inline-block;
     padding: 5px 20px;
     text-decoration: none;
     color: #fefefe;
 }
-/* #menu a::after {
-    content: " " attr(data-state);
-    color: red;
-}*/
 
+
+/* Change menu on small screens */
 @media all and (max-width: 1000px) {
     #menu-control {
         display: inline-block;
@@ -62,8 +79,8 @@
         position: relative;
     }
 
-    .footer-item{
-        font-size: xx-small;  
+    .footer-item {
+        font-size: xx-small;
     }
 
 }
@@ -84,7 +101,7 @@
 #custom-checkbox::before {
     position: absolute;
     content: "";
-    display:block;
+    display: block;
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -101,124 +118,13 @@
     display: none;
 }
 
-#custom-checkbox-input:checked + #custom-checkbox::before {
+#custom-checkbox-input:checked+#custom-checkbox::before {
     left: 100%;
     transform: translateX(-100%);
     background: green;
 }
 
-html, body {
-    height: 100%;
-    margin: 0;
-    background-color: grey;
-
-}
-
-.wrapper {
-    /*height: 100%;*/
-    display: flex;
-    flex-direction: column;
-}
-
-main {
-    padding-left: 40px;
-    flex: 1;
-    padding-bottom  : 20px;
-    perspective: 1600px;
-
-    
-}
-
-menu {
-    position: fixed;
-    
-
-}
-
-
-footer {
-    background-color: yellow;
-    display: flex;      
-    justify-content: space-between;
-    padding-left: 3%;
-    padding-right: 3%;
-    bottom: 0; /* Připevní footer ke spodní části okna */
-    left: 0;
-    width: 100%; /* Rozšíří footer na celou šířku okna */
-    position: fixed ;
-    box-sizing: border-box;
-}
-
-
-.footer-item {
-    text-align: center; /* Volitelné: Zarovná text na střed v každé položce */
-    margin: 0 10px; /* Volitelné: Přidá horizontální mezery mezi položkami */
-}
-
-.footer-item a {
-    color: #114;
-}
-
-.card {
-    width: 500px;
-    min-height: 750px;
-    display: flex;
-    background-color: rgb(126, 151, 195);
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px;
-
-    -webkit-transition: 1s;
-    -moz-transition: 1s;
-    -ms-transition: 1s;
-    -o-transition: 1s;
-    transition: 1s;
-}
-
-.flipped {
-    background-color: rgb(125, 168, 125);
-
-
-    transform: rotate3d(0, 1, 0, 180deg);
-    /*transform: */
-
-}
-
-
-
-.card-content {
-    border-radius: 7px;
-    background-color: rgb(125, 195, 252);
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    text-align: center;
-
-
-}
-.flipped .card-content {
-    background-color: rgb(182, 247, 182);
-    transform: scaleX(-1);
-}
-
-/*.flipped h2 {
-    text-align: center;
-    width: 100%;
-    transform: scaleX(-1);
-
-}*/
-
-.start-button {
-    background-color: #666;
-    color: #fff;
-    padding: 3%;
-    margin: 5%;
-    font-size: x-large;
-    font-family: Arial, Helvetica, sans-serif;  
-}
-
+/* Help picture */
 svg {
     width: 969px;
     height: 400px;
@@ -234,12 +140,94 @@ svg .help-header {
 
 }
 
-.help-text{
+.help-text {
     font-family: sans-serif;
 }
 
-.help-marked{
+.help-marked {
     fill: rgb(133, 74, 74);
-    font-style:italic;
+    font-style: italic;
     font-family: sans-serif;
+}
+
+/* Main part containing the cards */
+
+main {
+    padding-left: 40px;
+    flex: 1;
+    padding-bottom: 20px;
+    perspective: 1600px;
+}
+
+main .card {
+    width: 500px;
+    min-height: 750px;
+    display: flex;
+    background-color: rgb(126, 151, 195);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+
+    -webkit-transition: 1s;
+    -moz-transition: 1s;
+    -ms-transition: 1s;
+    -o-transition: 1s;
+    transition: 1s;
+}
+
+main .card .card-content {
+    border-radius: 7px;
+    background-color: rgb(125, 195, 252);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+    /* Transition and transformation of the card when showing the answer*/
+main .card.flipped {
+    background-color: rgb(125, 168, 125);
+    transform: rotate3d(0, 1, 0, 180deg);
+}
+
+main .card.flipped .card-content {
+    background-color: rgb(182, 247, 182);
+    /* Mirror the X axis, so the text is still readable after rotation of the card*/
+    transform: scaleX(-1);
+}
+
+/* Buttons on the first card when starting the app*/
+.start-button {
+    background-color: #666;
+    color: #fff;
+    padding: 3%;
+    margin: 5%;
+    font-size: x-large;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Footer */
+footer {
+    background-color: yellow;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 3%;
+    padding-right: 3%;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    position: fixed;
+    box-sizing: border-box;
+}
+
+
+.footer-item {
+    text-align: center;
+    margin: 0 10px;
+}
+
+.footer-item a {
+    color: #114;
 }
