@@ -37,7 +37,7 @@
     color: red;
 }*/
 
-@media all and (max-width: 1031px) {
+@media all and (max-width: 1000px) {
     #menu-control {
         display: inline-block;
     }
@@ -115,7 +115,7 @@ html, body {
 }
 
 .wrapper {
-    height: 100%;
+    /*height: 100%;*/
     display: flex;
     flex-direction: column;
 }
@@ -217,4 +217,29 @@ footer {
     margin: 5%;
     font-size: x-large;
     font-family: Arial, Helvetica, sans-serif;  
+}
+
+svg {
+    width: 969px;
+    height: 400px;
+    background-color: rgb(228, 228, 138);
+}
+
+.hidden {
+    display: none;
+}
+
+svg .help-header {
+    font: bold 42px sans-serif;
+
+}
+
+.help-text{
+    font-family: sans-serif;
+}
+
+.help-marked{
+    fill: rgb(133, 74, 74);
+    font-style:italic;
+    font-family: sans-serif;
 }

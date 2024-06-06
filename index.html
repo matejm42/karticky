@@ -15,18 +15,36 @@
         <label id="menu-control" for="menu-control-input">Menu</label><input type="checkbox" id="menu-control-input" />
         <nav id="menu">
             <ul>
-                <li id="button-reload"><a href="">Můžeme začít</a></li>
+                <li id="button-reload"><a href="">Domů</a></li>
                 <li id="button-view"><a href="">Zobrazit celý balíček</a></li>
                 <li id="button-add"><a href="">Přidat kartičku</a></li>
                 <li id="button-save"><a href="">Uložit do souboru</a></li>
                 <li id="button-load"><a href="">Nahrát ze souboru</a></li>
                 <li id="button-music" state="off"><a href="">Zapnout hudbu</a></li>
-                <!--li id="button-help" state="off"><a href="">Nápověda</a></li-->
+                <li id="button-help" state="off"><a href="">Nápověda</a></li>
             </ul>
         </nav>
         <audio loop="true" class="music">
             <source src="data/study_music.mp3" />     
         </audio>
+        <svg viewBox="0 0 969 400" class="svg-help hidden">
+            <text x="15" y="42" class="help-header">Nápověda</text>
+            <circle class="help-point" cx="25" cy="79" r="2.5" />
+            <text x="35" y="85" class="help-text">Tato aplikace slouží jako online učební kartičky</text>
+            <circle class="help-point" cx="25" cy="129" r="2.5" />
+            <text x="35" y="135" class="help-text">Na jedné straně máte otázku a po otočení se zobrazí odpověď</text>
+            <circle class="help-point" cx="25" cy="179" r="2.5" />
+            <text x="35" y="185" class="help-text">Pro vytvoření nového balíčku klikněte na</text>
+            <text x="330" y="185" class="help-marked">Přidat kartičku</text>
+            <text x="440" y="185" class="help-text">před načtením jiného balíčku</text>
+            <circle class="help-point" cx="25" cy="229" r="2.5" />
+            <text x="35" y="235" class="help-text">Poslední otevřený balíček zůstává uložen v paměti prohlížeče a můžete se k němu při příštím zapnutí vrátit</text>
+            <circle class="help-point" cx="25" cy="279" r="2.5" />
+            <text x="35" y="285" class="help-text">Bezpečnější ale je si svoje balíčky uložit v .json formátu přes tlačítko Uložit do souboru</text>
+            <circle class="help-point" cx="25" cy="329" r="2.5" />
+            <text x="35" y="335 " class="help-text">Mezi změnami balíčků lze přecházet za pomocí tlačítek historie</text>
+
+        </svg>
         <main id="main">
             <h1>Chyba, nenačetli se učící kartičky. Pravděpodobně se nenačítá JavaScript</h1>
         </main>
@@ -136,6 +154,7 @@
             } else {
                 current_deck.add_card(card);
                 change_card_to(current_deck.number_of_cards - 1)
+                change_deck(current_deck) // To change history
             }
         }
 
@@ -309,6 +328,20 @@
             
         }
 
+        function help_event(e) {
+            e.preventDefault();
+            helpEl = document.getElementsByClassName("svg-help")[0]
+            console.log(helpEl)
+            if ( helpEl.classList.contains('hidden') ) {
+                helpEl.classList.remove('hidden');
+            } else{
+                helpEl.classList.add('hidden');
+            }
+
+            
+            
+        }
+
         function dropJSON(targetEl, callback) {
             // disable default drag & drop functionality
             targetEl.addEventListener('dragenter', function (e) { e.preventDefault(); });
@@ -416,10 +449,11 @@
         let button_view = document.querySelector("#button-view");
         button_view.addEventListener("click", e => load_all(e));
 
-        musicEl = document.querySelector(".music");
-        
         let button_music = document.querySelector("#button-music");
         button_music.addEventListener("click", e => music_event(e));
+
+        let button_help = document.querySelector("#button-help");
+        button_help.addEventListener("click", e => help_event(e));
 
 
 
