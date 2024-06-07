@@ -4,8 +4,6 @@ body {
     height: 100%;
     margin: 0;
     background-color: grey;
-    display: flex;
-    flex-direction: column;
 }
 
 
@@ -154,7 +152,6 @@ svg .help-header {
 
 main {
     padding-left: 40px;
-    flex: 1;
     padding-bottom: 20px;
     perspective: 1600px;
 }
@@ -187,7 +184,7 @@ main .card .card-content {
 }
 
     /* Transition and transformation of the card when showing the answer*/
-main .card.flipped {
+main > .card.flipped {
     background-color: rgb(125, 168, 125);
     transform: rotate3d(0, 1, 0, 180deg);
 }

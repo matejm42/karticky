@@ -4,13 +4,12 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="css/stylesheet.css">
-    <!--script type="text/javascript" src="js/app.js"></script>-->
     <title>Kartičky</title>
     <link rel="icon" href="data/joker-card.png" type="image/png">
 </head>
 
 <body id="body">
-    <!--<header><h2>Menu</h2></header>-->
+    <!-- Checkbox to show the menu on small screens -->
     <label id="menu-control" for="menu-control-input">Menu</label><input type="checkbox" id="menu-control-input" />
     <nav id="menu">
         <ul>
@@ -23,9 +22,13 @@
             <li id="button-help" state="off"><a href="">Nápověda</a></li>
         </ul>
     </nav>
+
+    <!-- The audio without controls is not visible, it's controlled by the script -->
     <audio loop="true" class="music">
         <source src="data/study_music.mp3" />
     </audio>
+
+    <!-- The help box -->
     <svg viewBox="0 0 969 400" class="svg-help hidden">
         <text x="15" y="42" class="help-header">Nápověda</text>
         <circle class="help-point" cx="25" cy="79" r="2.5" />
@@ -44,11 +47,13 @@
             Uložit do souboru</text>
         <circle class="help-point" cx="25" cy="329" r="2.5" />
         <text x="35" y="335 " class="help-text">Mezi změnami balíčků lze přecházet za pomocí tlačítek historie</text>
-
     </svg>
+
+    <!-- The main part controlled by the script, where  -->
     <main id="main">
         <h1>Chyba, nenačetli se učící kartičky. Pravděpodobně se nenačítá JavaScript</h1>
     </main>
+
     <footer id="footer">
         <p class="footer-item">Autor: Miroslav Matějček</p>
         <p class="footer-item"><a href="mailto:matejm42-at-fel.cvut.cz">matejm42 &lt;at&gt; fel.cvut.cz</a>
@@ -60,6 +65,10 @@
 
     <script>
 
+        /*
+            Utils 
+        */
+
         function getRandomInt(min, max) {
             // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
             const minCeiled = Math.ceil(min);
@@ -67,100 +76,30 @@
             return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
         }
 
-        let should_show_all = false;
+        function dropJSON(targetEl, callback) {
+            // disable default drag & drop functionality
+            targetEl.addEventListener('dragenter', function (e) { e.preventDefault(); });
+            targetEl.addEventListener('dragover', function (e) { e.preventDefault(); });
 
-        function change_card_to(new_card_id) {
+            targetEl.addEventListener('drop', function (event) {
 
-            let cardEl = document.querySelector(`#card_${current_deck.current_card_id}`);
-            current_deck.current_card_id = new_card_id
-            cardEl.setAttribute("id", `card_${current_deck.current_card_id}`)
-            if (current_deck.getCurrentCard().isClicked) {
-                cardEl.className = "card flipped";
-            } else {
-                cardEl.className = "card"
-            }
-
-
-            cardEl.innerHTML = ""
-            cardEl = document.querySelector(`#card_${current_deck.current_card_id}`);
-            content_div = document.createElement('div');
-            content_div.className = 'card-content'
-            html = current_deck.getCurrentCard().getContent()
-            if (typeof html === 'string' || html instanceof String) {
-                cardEl.innerHTML = html
-                let button_demo = document.querySelector("#load-cards-demo");
-                button_demo.addEventListener("click", e => load_demo(e));
-                let button_file = document.querySelector("#load-cards-button-alert");
-                button_file.addEventListener("click", e => load_file(e));
-                let button_last = document.querySelector("#load-cards-button");
-                button_last.addEventListener("click", e => load_storage(e));
-            } else {
-                content_div.append(html)
-                cardEl.append(content_div);
-            }
-            if (should_show_all && !(current_deck.getCurrentCard() instanceof StartingCard)) {
-                show_all();
-            }
-
-        }
-
-
-        function show_all() {
-            main.innerHTML = "<h1>" + current_deck.name + "</h1>"
-
-            for (let i = 0; i < current_deck.cards.length; i++) {
-                main.innerHTML += `<div id='card_${i}'> </div>`;
-                let cardEl = document.querySelector(`#card_${i}`);
-                if (current_deck.cards[i].isClicked) {
-                    cardEl.className = "card flipped";
-                } else {
-                    cardEl.className = "card"
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var data = JSON.parse(this.result);
+                    callback(data);
+                };
+                try { // If the file is invalid, log it
+                    reader.readAsText(event.dataTransfer.files[0]);
+                } catch (error) {
+                    console.error(error);
                 }
-                /*cardEl.addEventListener("click",
-                    current_deck.flip_card.bind(current_deck,i)
-                );*/
-                cardEl.innerHTML = ""
-                content_div = document.createElement('div');
-                content_div.className = 'card-content'
-                html = current_deck.cards[i].getContent()
-                content_div.append(html)
-                cardEl.append(content_div);
-            }
+                event.preventDefault();
+            });
         }
 
-
-
-
-        function change_deck(deck, change_history = true) {
-            current_deck = deck;
-            main.innerHTML = "<h1>" + deck.name + "</h1>"
-            main.innerHTML += `<div id='card_${deck.current_card_id}'> </div>`;
-            let cardEl = document.querySelector(`#card_${deck.current_card_id}`);
-            /*cardEl.addEventListener("click", deck.flip_card.bind(deck, deck.current_card_id))*/
-            change_card_to(deck.current_card_id)
-            if (change_history) {
-                window.history.pushState(JSON.stringify(current_deck, null, null), "", "?" + deck.name)
-            }
-            if (deck.name != "Můžeme začít") {
-                window.localStorage.setItem("deck", JSON.stringify(deck, null, null));
-            }
-
-        }
-
-        function add_card_to_current_deck(card) {
-            if (current_deck.getCurrentCard() instanceof StartingCard) {
-                const deck_name = prompt("Zadejte jméno nového balíčku:", `Balíček_${getRandomInt(1000, 9999)}`)// Random so it doesn't overwrite already existing decks
-                change_deck(new CardDeck([card], deck_name));
-            } else {
-                current_deck.add_card(card);
-                change_card_to(current_deck.number_of_cards - 1)
-                change_deck(current_deck) // To change history
-            }
-        }
-
-        function restart() {
-            change_deck(starting_deck);
-        }
+        /* 
+            Classes
+        */
 
         class CardDeck {
             cards
@@ -188,19 +127,25 @@
                 this.number_of_cards += 1;
             }
 
+            /* Handle clicking on the card, eather show the answer or show a new card*/
             flip_card(card_id) {
                 let next_card = 0;
                 if (this.cards[card_id].isClicked) { // We already saw the answer, lets change question
                     this.cards[card_id].isClicked = false;
-                    next_card = getRandomInt(0, this.number_of_cards);
+                    if (!should_show_all) { // If only one card is visible, change it
+                        next_card = getRandomInt(0, this.number_of_cards);
+                    } else {
+                        next_card = card_id;
+                    }
                 } else { // Show the answer
                     this.cards[card_id].isClicked = true;
                     next_card = card_id;
                 }
 
-                change_card_to(next_card);
+                change_card_to(next_card, `#card_${card_id}`);
             }
 
+            /* Determines how to stringify this class */
             toJSON() {
                 return {
                     name: this.name,
@@ -210,6 +155,7 @@
                 }
             }
 
+            /* Allows to download instance of this class in json format */
             download(e, type_of = "application/json") {
                 e.preventDefault(); //tried to not reload, but it does not seem possible
                 e.stopPropagation();
@@ -223,6 +169,7 @@
             }
         }
 
+        /* Every card has a content and an information, if it was already fliped (clicked)*/
         class Card {
             #content;
             isClicked;
@@ -242,31 +189,9 @@
                     answer: this.answer
                 }
             }
-
         }
 
-        class StartingCard extends Card {
-            constructor() {
-                const content = `
-            <div class="card-content">
-                <h1>Vyberte si téma</h1>
-                <button id="load-cards-button" class="start-button">
-                    Nahrát naposledy použité kartičky
-                </button>
-
-                <button id="load-cards-button-alert" class="start-button">
-                    Nahrát kartičky ze souboru
-                </button>
-
-                <button id="load-cards-demo" class="start-button">
-                    Nahrát veřejné demo kartičky
-                </button>
-            </div>
-        `;
-                super(content);
-            }
-        }
-
+        /* Conthent of the QuestionCard contains from Question and Answer */
         class QuestionCard extends Card {
             question;
             answer;
@@ -294,81 +219,97 @@
                     return pre
                 }
             }
+        }
 
+        /* StartingCard has starting menu buttons */
+        class StartingCard extends Card {
+            constructor() {
+                const content = `
+            <div class="card-content">
+                <h1>Vyberte si téma</h1>
+                <button id="load-cards-button" class="start-button">
+                    Nahrát naposledy použité kartičky
+                </button>
 
+                <button id="load-cards-button-alert" class="start-button">
+                    Nahrát kartičky ze souboru
+                </button>
+
+                <button id="load-cards-demo" class="start-button">
+                    Nahrát veřejné demo kartičky
+                </button>
+            </div>
+        `;
+                super(content);
+            }
         }
 
 
-        function create_card_event(e) {
-            e.preventDefault()
-            const question = prompt("Zadejte otázku:");
-            const answer = prompt("Zadejte odpověď:");
-            const new_card = new QuestionCard(question, answer);
-            add_card_to_current_deck(new_card);
-        }
+        /* 
+            Functions changing the html
+        */
 
-        function reload_event(e) {
-            e.preventDefault();
-            restart();
-        }
-
-        function music_event(e) {
-            e.preventDefault()
-            buttonEl = document.querySelector("#button-music");
-            musicEl = document.querySelector(".music")
-            if (buttonEl.getAttribute("state") == "on") {
-                buttonEl.setAttribute("state", "off")
-                musicEl.pause()
-                buttonEl.innerHTML = "<a href> Zapnout hudbu</a>"
+        /* Change the wieved card */
+        function change_card_to(new_card_id, old_card_selector = "") {
+            /*Change the previous card to flipped, so the animation occures */
+            if (!old_card_selector) { // When only one card is visible
+                old_card_selector = `#card_${current_deck.current_card_id}`
+            }
+            let cardEl = document.querySelector(old_card_selector);
+            current_deck.current_card_id = new_card_id
+            cardEl.setAttribute("id", `card_${current_deck.current_card_id}`)
+            if (current_deck.getCurrentCard().isClicked) {
+                cardEl.className = "card flipped";
             } else {
-                buttonEl.setAttribute("state", "on")
-                musicEl.play()
-                buttonEl.innerHTML = "<a href> Vypnout hudbu</a>"
+                cardEl.className = "card"
             }
 
-        }
-
-        function help_event(e) {
-            e.preventDefault();
-            helpEl = document.getElementsByClassName("svg-help")[0]
-            console.log(helpEl)
-            if (helpEl.classList.contains('hidden')) {
-                helpEl.classList.remove('hidden');
+            /* And change the content */
+            cardEl.innerHTML = ""
+            content_div = document.createElement('div');
+            content_div.className = 'card-content'
+            html = current_deck.getCurrentCard().getContent()
+            /* If it is the starting card add listeners to buttons */
+            /* (only content of starting card is sring and not element) */
+            if (typeof html === 'string' || html instanceof String) {
+                cardEl.innerHTML = html
+                let button_demo = document.querySelector("#load-cards-demo");
+                button_demo.addEventListener("click", e => load_demo(e));
+                let button_file = document.querySelector("#load-cards-button-alert");
+                button_file.addEventListener("click", e => load_file(e));
+                let button_last = document.querySelector("#load-cards-button");
+                button_last.addEventListener("click", e => load_storage(e));
             } else {
-                helpEl.classList.add('hidden');
+                content_div.append(html)
+                cardEl.append(content_div);
             }
-
-
-
         }
 
-        function dropJSON(targetEl, callback) {
-            // disable default drag & drop functionality
-            targetEl.addEventListener('dragenter', function (e) { e.preventDefault(); });
-            targetEl.addEventListener('dragover', function (e) { e.preventDefault(); });
-
-            targetEl.addEventListener('drop', function (event) {
-
-                var reader = new FileReader();
-                reader.onloadend = function () {
-                    var data = JSON.parse(this.result);
-                    callback(data);
-                };
-                try {
-                    reader.readAsText(event.dataTransfer.files[0]);
-                } catch (error) {
-                    console.error(error);
+        /* Change the whole deck */
+        function change_deck(deck, change_history = true) {
+            current_deck = deck; // Global atribute
+            main.innerHTML = "<h1>" + deck.name + "</h1>"
+            main.innerHTML += `<div id='card_${deck.current_card_id}'> </div>`;
+            let cardEl = document.querySelector(`#card_${deck.current_card_id}`);
+            change_card_to(deck.current_card_id)
+            if (change_history) { // Save it to history
+                window.history.pushState(JSON.stringify(current_deck, null, null), "", "?" + deck.name)
+            }
+            // If it is not the starting deck, show it also to a local storage, so it can be used after the browser is closed
+            if (deck.name != "Můžeme začít") {
+                window.localStorage.setItem("deck", JSON.stringify(deck, null, null));
+                if (should_show_all && !(current_deck.getCurrentCard() instanceof StartingCard)) {
+                    show_all(); // Show all cards, if it should
                 }
-                event.preventDefault();
-            });
+            }
         }
 
+        /* Load deck from JSON */
         function loadJSON(data, change_history = true) {
-            if (data["name"] == "Můžeme začít") {
+            if (data["name"] == "Můžeme začít") { // Load the home menu
                 change_deck(starting_deck, change_history)
             } else {
                 cards = []
-
                 for (const card of data["cards"]) {
                     cards.push(new QuestionCard(card["question"], card["answer"]))
                 }
@@ -378,43 +319,59 @@
             }
         }
 
-        dropJSON(
-            document.getElementById("body"),
-            loadJSON
-        );
 
-        function load_file(e) {
-
-            alert("Přetáhněte soubor kamkoliv do těla aplikace a kartičky se načtou.")
-            e.preventDefault()
-            e.stopImmediatePropagation()
-        }
-
-        function load_demo(e) {
-            e.stopImmediatePropagation()
-            let url = 'https://matejm42.github.io/karticky/demo.json';
-            fetch(url)
-                .then(res => res.json())
-                .then(out => loadJSON(out))
-                .catch(err => { throw err });
-
-        }
-
-        function load_storage(e) {
-            e.stopImmediatePropagation();
-            try {
-                deck = window.localStorage.getItem("deck");
-                loadJSON(JSON.parse(deck));
-            } catch (e) {
-                console.log(e)
-                alert("Ve Vašem prohlížeči nemáte uložený žádný balíček. Nahrajte kartičky ze souboru, nebo použijte veřejné demo!");
+        /* Show all cards in the page, it's called when only QuestionCards are in the deck */
+        function show_all() {
+            main.innerHTML = "<h1>" + current_deck.name + "</h1>"
+            for (let i = 0; i < current_deck.cards.length; i++) {
+                main.innerHTML += `<div id='card_${i}'> </div>`;
+                let cardEl = document.querySelector(`#card_${i}`);
+                if (current_deck.cards[i].isClicked) {
+                    cardEl.className = "card flipped";
+                } else {
+                    cardEl.className = "card"
+                }
+                cardEl.innerHTML = ""
+                content_div = document.createElement('div');
+                content_div.className = 'card-content'
+                html = current_deck.cards[i].getContent()
+                content_div.append(html)
+                cardEl.append(content_div);
             }
-
-
         }
 
+        /* Add card to a deck or create a new deck, when there is none */
+        function add_card_to_current_deck(card) {
+            if (current_deck.getCurrentCard() instanceof StartingCard) {
+                const deck_name = prompt("Zadejte jméno nového balíčku:", `Balíček_${getRandomInt(1000, 9999)}`)// Random so it doesn't overwrite already existing decks
+                change_deck(new CardDeck([card], deck_name));
+            } else {
+                current_deck.add_card(card);
+                change_card_to(current_deck.number_of_cards - 1)
+                change_deck(current_deck) // To change history
+            }
+        }
+
+
+
+        /* Generate the home page */
+        function restart() {
+            change_deck(starting_deck);
+        }
+
+        /*
+        Event handlers
+        */
+
+        /* Home button */
+        function reload_event(e) {
+            e.preventDefault();
+            restart();
+        }
+
+        /* Show all button*/
         function load_all(e) {
-            e.preventDefault()
+            e.preventDefault() // The button is actualy an <a> tag, and we do not want to change the page
 
             if (should_show_all) {
                 buttonEl = document.querySelector("#button-view")
@@ -433,12 +390,87 @@
             }
         }
 
+        /* Add a card button*/
+        function create_card_event(e) {
+            e.preventDefault() // The button is actualy an <a> tag, and we do not want to change the page
+            const question = prompt("Zadejte otázku:");
+            const answer = prompt("Zadejte odpověď:");
+            const new_card = new QuestionCard(question, answer);
+            add_card_to_current_deck(new_card);
+        }
+
+        /* Load file (home) buttion */
+        function load_file(e) {
+            alert("Přetáhněte soubor kamkoliv do těla aplikace a kartičky se načtou.")
+            e.preventDefault() // The button is actualy an <a> tag, and we do not want to change the page
+            e.stopImmediatePropagation() // Prevent card flipping
+        }
+
+        /* Start music button */
+        function music_event(e) {
+            e.preventDefault() // The button is actualy an <a> tag, and we do not want to change the page
+            buttonEl = document.querySelector("#button-music");
+            musicEl = document.querySelector(".music")
+            if (buttonEl.getAttribute("state") == "on") {
+                buttonEl.setAttribute("state", "off")
+                musicEl.pause()
+                buttonEl.innerHTML = "<a href> Zapnout hudbu</a>"
+            } else {
+                buttonEl.setAttribute("state", "on")
+                musicEl.play()
+                buttonEl.innerHTML = "<a href> Vypnout hudbu</a>"
+            }
+
+        }
+
+        /* Help button */
+        function help_event(e) {
+            e.preventDefault(); // The button is actualy an <a> tag, and we do not want to change the page
+            helpEl = document.getElementsByClassName("svg-help")[0]
+            console.log(helpEl)
+            if (helpEl.classList.contains('hidden')) {
+                helpEl.classList.remove('hidden');
+            } else {
+                helpEl.classList.add('hidden');
+            }
+        }
+
+        /* Load public demo cards home button */
+        function load_demo(e) {
+            e.stopImmediatePropagation() // Prevent flipping the card
+            let url = 'https://matejm42.github.io/karticky/demo.json';
+            fetch(url)
+                .then(res => res.json())
+                .then(out => loadJSON(out))
+                .catch(err => { throw err });
+        }
+
+        /* Load last time cards home button */
+        function load_storage(e) {
+            e.stopImmediatePropagation(); // Prevent flipping the card
+            try {
+                deck = window.localStorage.getItem("deck");
+                loadJSON(JSON.parse(deck));
+            } catch (e) {
+                console.log(e)
+                alert("Ve Vašem prohlížeči nemáte uložený žádný balíček. Nahrajte kartičky ze souboru, nebo použijte veřejné demo!");
+            }
+        }
+
+        /* 
+            Create the listeners
+        */
+
+        let button_reload = document.querySelector("#button-reload");
+        button_reload.addEventListener("click", e => reload_event(e));
+
+        let button_view = document.querySelector("#button-view");
+        button_view.addEventListener("click", e => load_all(e));
+
 
         let button_add = document.querySelector("#button-add");
         button_add.addEventListener("click", e => create_card_event(e));
 
-        let button_reload = document.querySelector("#button-reload");
-        button_reload.addEventListener("click", e => reload_event(e));
 
         let button_save = document.querySelector("#button-save");
         button_save.addEventListener("click", e => current_deck.download(e));
@@ -446,8 +478,6 @@
         let button_load = document.querySelector("#button-load");
         button_load.addEventListener("click", e => load_file(e));
 
-        let button_view = document.querySelector("#button-view");
-        button_view.addEventListener("click", e => load_all(e));
 
         let button_music = document.querySelector("#button-music");
         button_music.addEventListener("click", e => music_event(e));
@@ -455,42 +485,42 @@
         let button_help = document.querySelector("#button-help");
         button_help.addEventListener("click", e => help_event(e));
 
+        dropJSON(document.getElementById("body"), loadJSON); // Creates the drag and drop listeners
 
 
-
+        /*
+            Initialise the values and start the aplication
+        */
         let main = document.querySelector("#main");
         let starting_card = new StartingCard();
         let current_deck = new CardDeck([starting_card], "Můžeme začít");
 
         let starting_deck = new CardDeck([starting_card], "Můžeme začít");
+        let should_show_all = false;
         restart();
 
-        // I can't add listener to every card in all card view in a for loop so I have to do it like this
+        /*
+        Global listeners, that required to be added after the aplication started to make error handling easier
+        */
+
+        /* Card click listener */
         document.addEventListener('click', function (event) {
-
-
+            // I can't add listener to every card in all card view in a for loop so I have to do it like this
+            // It listens to any click and react only to ones targeting cards
             if (event.target.closest('.card ') && !event.target.matches('.start-button')) {
                 for (let i = 0; i < current_deck.number_of_cards; i++) {
                     if (event.target.closest(`#card_${i}`)) {
                         current_deck.flip_card(i);
                     }
                 }
-
             }
-
         }, true);
 
+        /* Back and forward in history listener */
         window.addEventListener('popstate', e => {
             loadJSON(JSON.parse(e.state), change_history = false)
         });
-
-
-
-
-
-
     </script>
 
 </body>
-
 </html>

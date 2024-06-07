@@ -9,7 +9,7 @@
     },
     {
       "question": "Je možno za pomoci atributu download stáhnout soubor anižby to reloadnulo stránku?",
-      "answer": "Ani nikdo na StackOverflow nenašel funkční řešení, přestože pár se jich tak tváří."
+      "answer": "Ano, ale musí mít zrovna dobrou náladu."
     },
     {
       "question": "Je možno v javascriptu nějak rozumně uložit pole objektů vlastní třídy?",
