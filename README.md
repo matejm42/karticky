@@ -1,6 +1,6 @@
 # Kartičky
 
-Kartičky je singlepage webová aplikace, která má studentům pomoci naučit se danou látku. V aplikaci máte možnost si vytvoři balíčky kartiček, na kterých je na jedné straně napsána otázka a na druhé odpověď. Tyto balíčky si poté můžete procházet, snažit si na otázky odpovědět sám pro sebe a poté si zobrazit odpověď.
+Kartičky je singlepage webová aplikace, která má studentům pomoci naučit se probíranou látku. V aplikaci máte možnost si vytvoři balíčky kartiček, na kterých je na jedné straně napsána otázka a na druhé odpověď. Tyto balíčky si poté můžete procházet, snažit si na otázky odpovědět sám pro sebe a poté si zobrazit odpověď.
 
 Aplikace běží na *github-pages* tohoto projektu na adrese: [matejm42.github.io/karticky](https://matejm42.github.io/karticky)
 
