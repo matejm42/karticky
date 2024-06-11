@@ -6,6 +6,6 @@ Aplikace běží na *github-pages* tohoto projektu na adrese: [matejm42.github.i
 
 Věřím, že ovládání, je intuitivní, ale pro více informací využijte tlačítko *Nápověda* po otevření aplikace.
 
-Více informací o jednotlivých souborech tohoto projektu naleznete v dokumentu [dokumentace.md](dokumentace.md)
+Více informací o jednotlivých souborech tohoto projektu naleznete v dokumentu [dokumentace](dokumentace.md).
 
 Aplikace byla vytvořena jako semestrální projekt předmětu [Tvorba klientských aplikací v JavaScriptu](https://intranet.fel.cvut.cz/cz/education/bk/predmety/25/99/p2599006.html) na FEL ČVUT.
