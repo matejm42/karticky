@@ -15,4 +15,4 @@ Tento dokument popisuje jednotlivé soubory, které jsou součástí projektu *K
 
 ## Licence
 
-- [LICENCE](LICENCE) - Soubor upravující práva k využití ostatních souborů projektu třetími stranami.
+- [LICENCE](LICENCE) - Soubor upravující práva k využití tohoto projektu třetími stranami.
